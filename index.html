@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的日誌系統</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f0f8ff;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .entry {
+      background: white;
+      border-left: 5px solid #0077cc;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .date {
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌟 我的日誌</h1>
+  <textarea id="journalInput" placeholder="寫下今天的心情吧..."></textarea><br/>
+  <button onclick="saveJournal()">儲存日誌</button>
+
+  <h2>📚 日誌紀錄</h2>
+  <div id="journalEntries"></div>
+
+  <script>
+    function saveJournal() {
+      const text = document.getElementById('journalInput').value;
+      if (!text.trim()) return;
+
+      const date = new Date().toLocaleString('zh-TW');
+      const entry = { date, text };
+      const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+      entries.unshift(entry);
+      localStorage.setItem('journalEntries', JSON.stringify(entries));
+      document.getElementById('journalInput').value = '';
+      showEntries();
+    }
+
+    function showEntries() {
+      const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+      const container = document.getElementById('journalEntries');
+      container.innerHTML = '';
+      entries.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'entry';
+        div.innerHTML = `<div class="date">${entry.date}</div><div>${entry.text}</div>`;
+        container.appendChild(div);
+      });
+    }
+
+    // 初始化顯示
+    showEntries();
+  </script>
+
+</body>
+</html>
