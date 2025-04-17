@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>產品展示頁</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f8;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .product {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .product img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .product .name {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+    .product .price {
+      color: #008080;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .product .desc {
+      color: #555;
+      font-size: 0.9rem;
+    }
+    .uploader {
+      background: #e0f7fa;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #008080;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🛍️ 我的產品展示</h1>
+<div class="gallery" id="gallery"></div>
+
+<script>
+  const gallery = document.getElementById('gallery');
+  const products = JSON.parse(localStorage.getItem('products')) || [];
+
+  function renderGallery() {
+    gallery.innerHTML = '';
+    products.forEach((p, i) => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `
+        <img src="${p.image}" alt="產品圖片">
+        <div class="name">${p.name}</div>
+        <div class="price">$${p.price}</div>
+        <div class="desc">${p.desc}</div>
+      `;
+      gallery.appendChild(div);
+    });
+
+    // 新增商品表單
+    const uploadDiv = document.createElement('div');
+    uploadDiv.className = 'uploader';
+    uploadDiv.innerHTML = `
+      <h3>➕ 新增商品</h3>
+      <input type="text" id="nameInput" placeholder="產品名稱">
+      <input type="text" id="priceInput" placeholder="價格">
+      <textarea id="descInput" placeholder="產品描述"></textarea>
+      <input type="file" id="fileInput" accept="image/*">
+      <button onclick="addProduct()">新增商品</button>
+    `;
+    gallery.appendChild(uploadDiv);
+  }
+
+  function addProduct() {
+    const file = document.getElementById('fileInput').files[0];
+    const name = document.getElementById('nameInput').value.trim();
+    const price = document.getElementById('priceInput').value.trim();
+    const desc = document.getElementById('descInput').value.trim();
+    if (!file || !name || !price) return alert("請填寫完整資訊與選擇圖片");
+
+    const reader = new FileReader();
+    reader.onloadend = function () {
+      const imageData = reader.result;
+      products.push({ name, price, desc, image: imageData });
+      localStorage.setItem('products', JSON.stringify(products));
+      renderGallery();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  renderGallery();
+</script>
+
+</body>
+</html>
